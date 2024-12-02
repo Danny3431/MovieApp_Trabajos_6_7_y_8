@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.room.common)
+    implementation(libs.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -94,6 +95,16 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
+
+    // Test
+    androidTestImplementation("com.google.dagger:hilt-android-testing:2.51.1")
+    kaptAndroidTest("com.google.dagger:hilt-compiler:2.51.1")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.9.1")
+    testImplementation("android.arch.core:core-testing:1.1.1")
+    testImplementation ("androidx.room:room-testing:2.4.2")
+    testImplementation ("org.mockito:mockito-core:3.11.2")
+
+
 
 
 

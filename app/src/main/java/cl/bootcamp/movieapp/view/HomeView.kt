@@ -12,80 +12,64 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import cl.bootcamp.movieapp.components.AppBarView
 import cl.bootcamp.movieapp.viewmodel.MovieViewModel
 import cl.bootcamp.movieapp.components.MovieCard
+import cl.bootcamp.movieapp.model.Movie
 
 //import cl.bootcamp.movieapp.components.NavegationBarButtons
 
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeView(navController: NavController, viewModel: MovieViewModel) {
-    val movies = viewModel.movies.collectAsState(initial = emptyList())
-    val listState = rememberLazyListState()
-
-
+fun HomeView(
+    movies: List<Movie> = emptyList() // Lista de películas simulada para pruebas
+) {
     Scaffold(
         topBar = {
-            AppBarView(
-                title = "MobieDB tu App de Películas!",
-                showBackButton = false // Sin botón de retroceso
+            TopAppBar(
+                title = { Text("MovieDB") },
+                modifier = Modifier.semantics {
+                    contentDescription = "AppBar"
+                }
             )
         },
-        /*bottomBar = {
-            NavegationBarButtons(navController) // Barra de navegación inferior
-        },*/
-        floatingActionButton = {
-            FloatingActionButton(
-
-                onClick = {
-                    // Acción para agregar películas
-                    viewModel.addMovie()
-                    Modifier.offset(y = (-32).dp) // Alineamos el botón un poco hacia arriba
-                },
-                containerColor = MaterialTheme.colorScheme.primary
+        content = { paddingValues ->
+            // Aquí se pasa paddingValues para aplicar el padding
+            LazyColumn(
+                contentPadding = paddingValues // Aplica el padding aquí
             ) {
-                Icon(
-                    imageVector = Icons.Default.Add, // Ícono de agregar (+)
-                    contentDescription = "Agregar Película",
-                    tint = Color.White
-                )
-            }
-        }
-    ) {
-        // Contenido de la pantalla
-        Column(modifier = Modifier.padding(it)) {
-
-            // Lista de películas con LazyColumn
-            LazyColumn(state = listState) {
-                items(movies.value) { movie ->
+                items(movies) { movie ->
                     MovieCard(
                         movie = movie,
-                        onDeleteClick = { viewModel.deleteMovie(movie.id) },
-                        onCardClick = { navController.navigate("movieDetailView/${movie.id}") }
+                        modifier = Modifier.testTag("MovieCard")
                     )
                 }
             }
-
-            // Paginación al llegar al final de la lista
-            val isAtEndOfList =
-                listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index == movies.value.lastIndex
-
-            if (isAtEndOfList) {
-                // Cargar la siguiente página
-                viewModel.fetchMoviesFromApi()
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { /* Acción para agregar película */ },
+                modifier = Modifier.testTag("AddMovieButton")
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Agregar Película")
             }
         }
+    )
     }
-}
